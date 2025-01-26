@@ -8,6 +8,9 @@
         //同じ数字が続いたら、勝ち負けが決まるまでカードを出します。
         //勝ち負けが決まったら、勝ったプレイヤーの名前を表示してください。今回は一回のみの勝負。
 
+        //STEP2
+        // 誰かの手札がなくなったらゲーム終了し、順位を表示するようにしましょう。この時点での手札の枚数が多い順に1位、2位、・・・という順位になります。
+
     //ゲームの進行
     class Game {
         private $cards;
@@ -37,22 +40,51 @@
                 echo "戦争！\n";
                 $maxValue = 0;
                 $winner = null;
+                // $field = [];
                 foreach ($this->players as $index => $player) {
-                    $field = $player->setField();
-                    echo "プレイヤー" . ($index + 1) . "のカードは{$field}です。\n";
-                    if ($field->getRank() > $maxValue) {
-                        $maxValue = $field->getRank();
+                    if (!$player->hasCards()) {
+                        continue;
+                    }
+                    // $field = $player->setField();
+                    $card = $player->setField();
+                    $field[] = $card;
+                    // $player->setWonCards($card);
+                    echo "プレイヤー" . ($index + 1) . "のカードは{$card}です。\n";
+                    if ($card->getRank() > $maxValue) {
+                        $maxValue = $card->getRank();
                         $winner = $player;
-                    } else if ($field->getRank() === $maxValue) {
+                    } else if ($card->getRank() === $maxValue) {
                         $winner = null;
                     }
                 }
-    
+                
+                // if(!$player || $player->hasCards()) {
                 if ($winner) {
-                    echo "{$winner->getName()}が勝ちました。\n戦争を終了します。";
-                    break;
+                    // $winner->newHand();
+                    $currentHand = array_merge($winner->getHand(), $field);
+                    $winner->setHand($currentHand);
+                    $quantity = count($field);
+                    echo "{$winner->getName()}が勝ちました。{$winner->getName()}はカードを{$quantity}枚もらいました\n";
+                    // $player->resetWonCards();
+                    $field = [];
                 } else {
                     echo "引き分けです。\n";
+                } 
+                // } else {
+                //     echo "{$player->getName()}の手札がなくなりました。\n";
+                //     echo "{$winner->getName()}の手札の枚数は{$winner->countHand()}枚です。{$player->getName()}の手札の枚数は0枚です。\n";
+                //     echo "{$winner->getName()}が1位、{$player->getName()}が2位です。\n";
+                //     echo "戦争を終了します。\n";
+                //     break;
+                // }
+
+                // ゲーム終了条件
+                $remainingPlayers = array_filter($this->players, fn($player) => $player->hasCards());
+                if (count($remainingPlayers) === 1) {
+                    $winner = reset($remainingPlayers);
+                    echo "{$winner->getName()}が1位です！\n";
+                    echo "戦争を終了します。\n";
+                    break;
                 }
             }
         }
@@ -109,17 +141,19 @@
             return "{$this->number} of {$this->suit}";
         }
     }
-
+    //参加者
     class Player {
         private $name;
         private $hand = [];
+        private $wonCards = [];
         public function __construct($name) {
             $this->name = $name;
         }
-
+        //参加者の名前を取得
         public function getName() {
             return $this->name;
         }
+
         //配られた手札
         public function setHand($hand) {
             $this->hand = $hand;
@@ -128,6 +162,34 @@
         //配られた手札から一枚出す
         public function setField() {
             return array_pop($this->hand);
+        }
+        //現在の手札
+        public function getHand() {
+            return $this->hand;
+        }
+        //手札のカウント
+        public function countHand() {
+            return count($this->hand);
+        }
+        // //勝った場合の場札を管理
+        // public function setWonCards($wonCards) {
+        //     $this->wonCards[] = $wonCards;
+        // }
+        // //場札のリセット
+        // public function resetWonCards() {
+        //     $this->wonCards = [];
+        // }
+        // //勝ち取った場札のカウント
+        // public function countWonCards() {
+        //     return count($this->wonCards);
+        // }
+        //現在の手札に勝ち取った場札を足す
+        // public function newHand() {
+        //     $this->hand = array_merge($this->hand, $this->wonCards);
+        // }
+        //手札の有無を判定
+        public function hasCards() {
+            return !empty($this->hand);
         }
     }
 
