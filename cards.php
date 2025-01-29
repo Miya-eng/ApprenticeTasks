@@ -21,46 +21,70 @@
             $this->cards = new Cards();
             $this->cards->makeCards();
             $this->cards->shuffle();
-            //手札の配布 ###############
-            $hand = $this->cards->giveCards(2);
-            for ($i = 1; $i < 3; $i++) {
-                $this->players[] = new Player("プレイヤー{$i}");
-            }
-            foreach ($this->players as $index => $player) {
-                $player->setHand($hand[$index]);
-            }
+            // //手札の配布 ###############
+            // $hand = $this->cards->giveCards(2);
+            // for ($i = 1; $i < 3; $i++) {
+            //     $this->players[] = new Player("プレイヤー{$i}");
+            // }
+            // foreach ($this->players as $index => $player) {
+            //     $player->setHand($hand[$index]);
+            // }
         }
 
         public function play() {
-            $field = [];
+            //開始の合図
             echo "戦争を開始します。\n";
+            //プレイヤー人数の入力
+            while (true) {
+                echo "プレイヤーの人数を入力してください（2〜5）: ";
+                $playerNum = (int) fgets(STDIN);
+                if ($playerNum >= 2 && $playerNum <= 5) {
+                    break;
+                } else {
+                    echo "1人または5人以上でのプレイはできません。再度プレイヤーの人数を入力してください。\n";
+                }
+            }
+            //プレイヤー名の入力
+            for ($i = 1; $i <= $playerNum; $i++) {
+                echo "プレイヤー{$i}の名前を入力してください: ";
+                $name = trim(fgets(STDIN));
+                $this->players[] = new Player($name);
+            }
+            //各プレイヤーの手札を生成
+            $hand = $this->cards->giveCards($playerNum);
+            foreach ($this->players as $index => $player) {
+                $player->setHand($hand[$index]);
+            }
             echo "カードが配られました。\n";
             //プレイヤーはカードを一枚出し、場に出されたカードの強さを比べ、勝者の宣言
-            while (true) {
+            $field = [];
+            while (array_filter($this->players, fn($player) => $player->hasCards())) {
                 echo "戦争！\n";
                 $maxValue = 0;
-                $winner = null;
+                $winners = [];
                 // $field = [];
                 foreach ($this->players as $index => $player) {
                     if (!$player->hasCards()) {
+                        echo "{$player->getName()}の手札がなくなりました。\n";
                         continue;
-                    }
+                    } 
                     // $field = $player->setField();
                     $card = $player->setField();
                     $field[] = $card;
                     // $player->setWonCards($card);
-                    echo "プレイヤー" . ($index + 1) . "のカードは{$card}です。\n";
+                    echo "{$player->getName()}のカードは{$card}です。\n";
                     if ($card->getRank() > $maxValue) {
                         $maxValue = $card->getRank();
-                        $winner = $player;
+                        $winners = [$player];
                     } else if ($card->getRank() === $maxValue) {
-                        $winner = null;
+                        $winners[] = $player;
                     }
                 }
                 
                 // if(!$player || $player->hasCards()) {
-                if ($winner) {
+                if (count($winners) === 1) {
                     // $winner->newHand();
+                    $winner = $winners[0];
                     $currentHand = array_merge($winner->getHand(), $field);
                     $winner->setHand($currentHand);
                     $quantity = count($field);
@@ -77,16 +101,29 @@
                 //     echo "戦争を終了します。\n";
                 //     break;
                 // }
-
-                // ゲーム終了条件
+                // **ゲーム終了判定**
                 $remainingPlayers = array_filter($this->players, fn($player) => $player->hasCards());
-                if (count($remainingPlayers) === 1) {
-                    $winner = reset($remainingPlayers);
-                    echo "{$winner->getName()}が1位です！\n";
-                    echo "戦争を終了します。\n";
-                    break;
-                }
+                if (count($remainingPlayers) === count($this->players) - 1) {
+                    break; // 残り1人になったらループを終了
+        }
             }
+            // ゲーム終了
+            $this->endPlay();
+        }
+        // ゲーム終了
+        public function endPlay() {
+            $playerRanks = [];
+            foreach ($this->players as $player) {
+                // echo "{$player->getName()}の手札の枚数は{$player->countHand()}枚です。\n";
+                $playerRanks[$player->getName()] = $player->countHand();
+            }
+            arsort($playerRanks);
+            $rank = 1;
+            foreach ($playerRanks as $name => $handCount) {
+                echo "{$rank}位:{$name}（{$handCount}枚）\n";
+                $rank++;
+            }
+            echo "戦争を終了します。\n";
         }
     }
 
@@ -145,7 +182,7 @@
     class Player {
         private $name;
         private $hand = [];
-        private $wonCards = [];
+        // private $wonCards = [];
         public function __construct($name) {
             $this->name = $name;
         }
@@ -187,6 +224,7 @@
         // public function newHand() {
         //     $this->hand = array_merge($this->hand, $this->wonCards);
         // }
+        
         //手札の有無を判定
         public function hasCards() {
             return !empty($this->hand);
