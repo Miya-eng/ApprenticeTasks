@@ -62,6 +62,7 @@
                 echo "戦争！\n";
                 $maxValue = 0;
                 $winners = [];
+                $winnersCard = [];
                 // $field = [];
                 foreach ($this->players as $index => $player) {
                     if (!$player->hasCards()) {
@@ -76,8 +77,18 @@
                     if ($card->getRank() > $maxValue) {
                         $maxValue = $card->getRank();
                         $winners = [$player];
+                        $winnersCard = [$card];
                     } else if ($card->getRank() === $maxValue) {
-                        $winners[] = $player;
+                        if ($maxValue === 14) {
+                            // if ($card->getSuitRank() > $maxValue) {
+                            //     $winners = [$player];
+                            // }
+                            if ($card->getSuitRank() > $winnersCard[0]->getSuitRank()) {
+                                $winners = [$player];
+                            }
+                        } else {
+                            $winners[] = $player;
+                        }
                     }
                 }
                 
@@ -86,6 +97,7 @@
                     // $winner->newHand();
                     $winner = $winners[0];
                     $currentHand = array_merge($winner->getHand(), $field);
+                    shuffle($currentHand);
                     $winner->setHand($currentHand);
                     $quantity = count($field);
                     echo "{$winner->getName()}が勝ちました。{$winner->getName()}はカードを{$quantity}枚もらいました\n";
@@ -139,6 +151,8 @@
                     $this->cards[] = new Rank($suit, $number);
                 }
             }
+
+            $this->cards[] = new Rank(null, "Joker");
         }
 
         //トランプをシャッフル
@@ -170,12 +184,21 @@
         
         public function getRank() {
             $ranks = ["2" => 2, "3" => 3, "4" => 4, "5" => 5, "6" => 6, "7" => 7, "8" => 8, "9" => 9,
-                       "10" => 10, "J" => 11, "Q" => 12, "K" => 13, "A" => 14];
+                       "10" => 10, "J" => 11, "Q" => 12, "K" => 13, "A" => 14, "Joker" => 15];
             return $ranks[$this->number];
+        }
+
+        public function getSuitRank() {
+            $ranks = ["ハート" => 1 , "スペード" => 2, "ダイヤ" => 1 , "クローバー" => 1];
+            return $ranks[$this->suit] ?? 0;
         }
     
         public function __toString() {
-            return "{$this->number} of {$this->suit}";
+            if ($this->suit) {
+                return "{$this->suit}の{$this->number}";
+            } else {
+                return "{$this->number}";
+            }
         }
     }
     //参加者
