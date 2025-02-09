@@ -2,68 +2,67 @@
 
 ## STEP1 - テーブル設計をする。
 
-- テーブル：channels
-| カラム名|データ型 |NULL| キー|初期値 |AUTO INCREMENT|
-|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|
-|id         |INT        |           |PRIMARY    |           |YES        |
-|name       |VARCHAR(20)|           |UNIQUE     |           |           |
+テーブル：channels
+| カラム名  | データ型      | NULL | キー        | 初期値 | AUTO INCREMENT |
+|----------|------------|------|------------|------|---------------|
+| id       | INT        |      | PRIMARY    |      | YES           |
+| name     | VARCHAR(20)|      | UNIQUE     |      |               |
 
-- （中間 - channels, episodes）テーブル：schedules
-| カラム名|データ型 |NULL| キー|初期値 |AUTO INCREMENT|
-|----------:|:---------:|:---------:|:-------------:|:---------:|:---------:|
-|id         |INT        |           |PRIMARY        |           |YES        |
-|channel_id |INT        |           |UNIQUE, FOREIGN|           |           |
-|episode_id |INT        |           |UNIQUE, FOREIGN|           |           |
-|start_time |TIMESTAMP  |           |UNIQUE, FOREIGN|           |           |
-|end_time   |TIMESTAMP  |           |               |           |           |
-|view_count |INT        |           |               |           |           |
+（中間 - channels, episodes）テーブル：schedules
+| カラム名   | データ型   | NULL | キー              | 初期値 | AUTO INCREMENT |
+|-----------|----------|------|----------------|------|---------------|
+| id        | INT      |      | PRIMARY        |      | YES           |
+| channel_id| INT      |      | UNIQUE, FOREIGN |      |               |
+| episode_id| INT      |      | UNIQUE, FOREIGN |      |               |
+| start_time| TIMESTAMP|      | UNIQUE, FOREIGN |      |               |
+| end_time  | TIMESTAMP|      |                |      |               |
+| view_count| INT      |      |                |      |               |
 
-- テーブル：genres
-|カラム名|データ型|NULL|キー|初期値|AUTO INCREMENT|
-|---------:|:---------:|:---------:|:---------:|:---------:|:---------:|
-|id  　　 　|INT        |           |PRIMARY    |           |YES        |
-|name　　　 |VARCHAR(20)|           |UNIQUE     |           |           |
+テーブル：genres
+| カラム名 | データ型    | NULL | キー     | 初期値 | AUTO INCREMENT |
+|---------|----------|------|--------|------|---------------|
+| id      | INT      |      | PRIMARY |      | YES           |
+| name    | VARCHAR(20)|      | UNIQUE  |      |               |
 
-- （中間 - genres, programs）テーブル：program_genres
-|カラム名|データ型|NULL|キー|初期値|AUTO INCREMENT|
-|---------:|:---------:|:---------:|:--------------:|:---------:|:---------:|
-|genre_id  |INT        |           |PRIMARY, FOREIGN|           |           |
-|program_id|INT        |           |PRIMARY, FOREIGN|           |           |
+（中間 - genres, programs）テーブル：program_genres
+| カラム名   | データ型  | NULL | キー              | 初期値 | AUTO INCREMENT |
+|-----------|---------|------|----------------|------|---------------|
+| genre_id  | INT     |      | PRIMARY, FOREIGN |      |               |
+| program_id| INT     |      | PRIMARY, FOREIGN |      |               |
 
-- テーブル：programs
-| カラム名|データ型 |NULL| キー|初期値 |AUTO INCREMENT|
-|-----------:|:----------:|:---------:|:---------:|:---------:|:---------:|
-|id          |INT         |           |PRIMARY    |           |YES        |
-|name        |VARCHAR(20) |           |           |           |           |
-|genre_id    |INT         |           |FOREIGN    |           |           |
-|description |VARCHAR(200)|YES        |           |' '        |           |
+テーブル：programs
+| カラム名   | データ型     | NULL | キー     | 初期値 | AUTO INCREMENT |
+|----------|----------|------|--------|------|---------------|
+| id       | INT      |      | PRIMARY |      | YES           |
+| name     | VARCHAR(20) |      |        |      |               |
+| genre_id | INT      |      | FOREIGN |      |               |
+| description | VARCHAR(200) | YES  |        | ' '  |               |
 
-- テーブル：series
-| カラム名|データ型 |NULL| キー|初期値 |AUTO INCREMENT|
-|----------:|:---------:|:---------:|:---------:|:---------:|:---------:|
-|id         |INT        |           |PRIMARY    |           |YES        |
-|name       |VARCHAR(20)|           |           |           |           |
-|program_id |INT        |           |FOREIGN    |           |           |
+テーブル：series
+| カラム名  | データ型     | NULL | キー     | 初期値 | AUTO INCREMENT |
+|----------|----------|------|--------|------|---------------|
+| id       | INT      |      | PRIMARY |      | YES           |
+| name     | VARCHAR(20) |      |        |      |               |
+| program_id | INT   |      | FOREIGN |      |               |
 
+テーブル：seasons
+| カラム名      | データ型  | NULL | キー     | 初期値 | AUTO INCREMENT |
+|------------|---------|------|--------|------|---------------|
+| id         | INT     |      | PRIMARY |      | YES           |
+| season_number | CHAR(5) |      |        |      |               |
+| program_id | INT     |      | FOREIGN |      |               |
+| series_id  | INT     |      | FOREIGN |      |               |
 
-- テーブル：seasons
-| カラム名|データ型 |NULL| キー|初期値 |AUTO INCREMENT|
-|------------:|:---------:|:---------:|:---------:|:---------:|:---------:|
-|id           |INT        |           |PRIMARY    |           |YES        |
-|season_number|CHAR(5)    |           |           |           |           |
-|program_id   |INT        |           |FOREIGN    |           |           |
-|series_id    |INT        |           |FOREIGN    |           |           |
+テーブル：episodes
+| カラム名   | データ型      | NULL | キー     | 初期値 | AUTO INCREMENT |
+|----------|------------|------|--------|------|---------------|
+| id       | INT        |      | PRIMARY |      | YES           |
+| name     | VARCHAR(40)|      |        |      |               |
+| program_id | INT      |      | FOREIGN |      |               |
+| series_id  | INT      |      | FOREIGN |      |               |
+| season_id  | INT      |      | FOREIGN |      |               |
+| description| VARCHAR(200)| YES |        | ' '  |               |
 
-
-- テーブル：episodes
-| カラム名|データ型 |NULL| キー|初期値 |AUTO INCREMENT|
-|----------:|:----------:|:---------:|:---------:|:---------:|:---------:|
-|id         |INT         |           |PRIMARY    |           |YES        |
-|name       |VARCHAR(40) |           |           |           |           |
-|program_id |INT         |           |FOREIGN    |           |           |
-|series_id  |INT         |           |FOREIGN    |           |           |
-|season_id  |INT         |           |FOREIGN    |           |           |
-|description|VARCHAR(200)|YES        |           |' '        |           |
 
 
 ## STEP2 - テーブル設計をする。
@@ -73,7 +72,7 @@ MySQLを起動 -> MySQLにログイン -> CREATE DATABASE データベース名
 2. ステップ1で設計したテーブルを構築
 
 **WorkBenchを使ってER図からテーブルを作成**
-
+```sql
 CREATE TABLE IF NOT EXISTS internet_tv.channels (
   id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(50) NOT NULL,
@@ -183,9 +182,12 @@ CREATE TABLE IF NOT EXISTS internet_tv.program_genres (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
+```
+
+
 
 3. サンプルデータを入れる。（ChatGPTを利用）
-
+```sql
 -- チャンネルデータ（10チャンネル）
 INSERT INTO channels (id, name) VALUES
 (1, 'ABEMA SPECIAL'),
@@ -399,18 +401,21 @@ INSERT INTO schedules (id, channel_id, episode_id, start_time, end_time, view_co
 (51, 1, 37, '2025-02-09 18:00:00', '2025-03-30 18:30:00', 64000, 21),
 (52, 3, 38, '2025-02-09 20:00:00', '2025-03-30 20:30:00', 67000, 21),
 (53, 1, 39, '2025-02-09 23:00:00', '2025-03-30 23:30:00', 74000, 21);
+```
 
 ## STEP 3　
 （ビュー作成は検討）
 1. よく見られているエピソードを知りたいです。エピソード視聴数トップ3のエピソードタイトルと視聴数を取得してください。
+```sql
 mysql> SELECT e.id, e.name, SUM(s.view_count) AS total_views
     -> FROM schedules s
     -> JOIN episodes e ON s.episode_id = e.id
     -> GROUP BY e.id, e.name
     -> ORDER BY total_views DESC
     -> LIMIT 3;
-
+```
 2. よく見られているエピソードの番組情報やシーズン情報も合わせて知りたいです。エピソード視聴数トップ3の番組タイトル、シーズン数、エピソード数、エピソードタイトル、視聴数を取得してください。
+```sql
 mysql> SELECT e.id AS episode_id, p.name AS program_title, se.season_number, e.name AS episode_title, SUM(s.view_count) AS total_views
     -> FROM schedules s
     -> JOIN episodes e ON s.episode_id = e.id
@@ -419,8 +424,10 @@ mysql> SELECT e.id AS episode_id, p.name AS program_title, se.season_number, e.n
     -> GROUP BY e.id, p.name, se.season_number, e.name
     -> ORDER BY total_views DESC
     -> LIMIT 3;
+```
 
 3. 本日の番組表を表示するために、本日、どのチャンネルの、何時から、何の番組が放送されるのかを知りたいです。本日放送される全ての番組に対して、チャンネル名、放送開始時刻(日付+時間)、放送終了時刻、シーズン数、エピソード数、エピソードタイトル、エピソード詳細を取得してください。なお、番組の開始時刻が本日のものを本日方法される番組とみなすものとします。
+```sql
 mysql> SELECT ch.name AS channel_name, s.start_time, s.end_time, se.season_number, e.id AS episode_number, e.name AS episode_title, e.description AS episode_description
     -> FROM schedules s
     -> JOIN channels ch ON s.channel_id = ch.id
@@ -428,8 +435,10 @@ mysql> SELECT ch.name AS channel_name, s.start_time, s.end_time, se.season_numbe
     -> JOIN seasons se ON e.season_id = se.id
     -> WHERE DATE(s.start_time) = CURDATE()
     -> ORDER BY s.start_time;
+```
 
 4. ドラマというチャンネルがあったとして、ドラマのチャンネルの番組表を表示するために、本日から一週間分、何日の何時から何の番組が放送されるのかを知りたいです。ドラマのチャンネルに対して、放送開始時刻、放送終了時刻、シーズン数、エピソード数、エピソードタイトル、エピソード詳細を本日から一週間分取得してください。
+```sql
 mysql> SELECT s.start_time, s.end_time, se.season_number, e.id AS episode_number, e.name AS episode_title, e.description AS episode_description
     -> FROM schedules s
     -> JOIN channels ch ON s.channel_id = ch.id
@@ -438,8 +447,10 @@ mysql> SELECT s.start_time, s.end_time, se.season_number, e.id AS episode_number
     -> WHERE ch.name = 'ABEMA DRAMA'
     -> AND DATE(s.start_time) BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)
     -> ORDER BY s.start_time;
+```
 
 5. (advanced) 直近一週間で最も見られた番組が知りたいです。直近一週間に放送された番組の中で、エピソード視聴数合計トップ2の番組に対して、番組タイトル、視聴数を取得してください
+```sql
 mysql> SELECT p.name AS program_title, SUM(s.view_count) AS total_views
     -> FROM schedules s
     -> JOIN episodes e ON s.episode_id = e.id
@@ -449,8 +460,10 @@ mysql> SELECT p.name AS program_title, SUM(s.view_count) AS total_views
     -> GROUP BY p.id, p.name
     -> ORDER BY total_views DESC
     -> LIMIT 2;
+```
 
 6. (advanced) ジャンルごとの番組の視聴数ランキングを知りたいです。番組の視聴数ランキングはエピソードの平均視聴数ランキングとします。ジャンルごとに視聴数トップの番組に対して、ジャンル名、番組タイトル、エピソード平均視聴数を取得してください。
+```sql
 SELECT genre_name, program_title, avg_views
 FROM (
     SELECT g.name AS genre_name, 
@@ -481,3 +494,4 @@ WHERE (genre_name, avg_views) IN (
     GROUP BY genre_name
 )
 ORDER BY avg_views DESC;
+```
